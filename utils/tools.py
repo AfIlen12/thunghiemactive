@@ -11,12 +11,12 @@ classes = ['cat', 'bird', 'motorbike', 'diningtable', 'train', 'tvmonitor', 'bus
 
 def sort_class_extract(datasets):    
     """
-        Permet le tri par classes d'un jeu de données, parcours l'ensemble des objets d'une image et si il trouve un objet d'une classe
-        il l'ajoute au jeu de données de celle-ci. 
-        Entrée :
-            - Jeu de données. 
-        Sortie :
-            - Dictionnaire de jeu de données. ( clés : Classes, valeurs : Toutes les données de cette classe )
+        -Cho phép sắp xếp theo các lớp của tập dữ liệu, duyệt tất cả các đối tượng trong ảnh và tìm thấy đối tượng của một lớp
+        nó thêm nó vào tập dữ liệu của nó.
+        -Input :
+        - Dataset.
+        -Output:
+        - Từ điển tập dữ liệu. (khóa: Lớp, giá trị: Tất cả dữ liệu trong lớp này)
     """
     datasets_per_class = {}
     for j in classes:
@@ -48,7 +48,7 @@ def sort_class_extract(datasets):
 
 def show_new_bdbox(image, labels, color='r', count=0):
     """
-        Fonction pour la visualisation des boites englobantes directement sur l'image.
+        Trực quan hóa các hộp bao (bounding box) trên một hình ảnh
     """
     xmin, xmax, ymin, ymax = labels[0],labels[1],labels[2],labels[3]
     fig,ax = plt.subplots(1)
@@ -64,8 +64,7 @@ def show_new_bdbox(image, labels, color='r', count=0):
 
 def extract(index, loader):
     """
-        A partir du dataloader extrait ( et sépare ) les images et les boites englobantes vérité terrain
-        et adaptent les coordonnées par rapport aux nouvelles tailles d'images.
+        - Lấy image và tập box(tọa độ trên trái và dưới phải, tọa độ này được chuẩn hóa theo 224x224) của một class nào đó trong một tấm ảnh
     """
     extracted = loader[index]
     ground_truth_boxes =[]
@@ -86,9 +85,7 @@ def extract(index, loader):
 
 
 def voc_ap(rec, prec, voc2007=False):
-    """
-        Calcul de l'AP et du Recall. Si voc2007 est vraie on utilise alors la mesure préconisé par le papier de PASCAL VOC 2007 ( méthode des 11 points )
-    """
+
     if voc2007:
         ap = 0.0
         for t in np.arange(0.0, 1.1, 0.1):
@@ -111,7 +108,7 @@ def voc_ap(rec, prec, voc2007=False):
 
 def prec_rec_compute(bounding_boxes, gt_boxes, ovthresh):
     """
-        Calcul de précision et recall grâce à l'Intersection/Union et selon le threshold entre les vérités terrains et les prédictions.
+        Tính precision và recall dựa vào tp(true positive) ,nd(tổng số boxes),fp (false positive)
     """
     nd = len(bounding_boxes)
     npos = nd
@@ -149,14 +146,13 @@ def prec_rec_compute(bounding_boxes, gt_boxes, ovthresh):
     tp = np.cumsum(tp)
     rec = tp / float(npos)
     prec = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
+
     
     return prec, rec
 
 
 def compute_ap_and_recall(all_bdbox, all_gt, ovthresh):
-    """
-        Calcul de la VOC detection metrique. 
-    """
+
     prec, rec = prec_rec_compute(all_bdbox, all_gt, ovthresh)
     ap = voc_ap(rec, prec, False)
     return ap, rec[-1]
@@ -164,7 +160,7 @@ def compute_ap_and_recall(all_bdbox, all_gt, ovthresh):
 
 def eval_stats_at_threshold( all_bdbox, all_gt, thresholds=[0.1, 0.2, 0.3, 0.4, 0.5]):
     """
-        Evaluation et collecte des statistiques et ce pour différents seuils.
+        Đánh giá và thu thập số liệu thống kê cho các thresholds khác nhau
     """
     stats = {}
     for ovthresh in thresholds:
@@ -175,7 +171,7 @@ def eval_stats_at_threshold( all_bdbox, all_gt, thresholds=[0.1, 0.2, 0.3, 0.4, 
 
 
 """
-    Structure de données pour stocker les éléments de mémoire pour l'algorithme de Replay Memory.
+    Cấu trúc dữ liệu để lưu trữ các phần tử bộ nhớ cho thuật toán Replay Memory.
 """
 class ReplayMemory(object):
     
